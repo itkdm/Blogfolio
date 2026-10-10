@@ -1,0 +1,14 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import RecommendationForm from '../components/RecommendationForm.astro';
+import { t } from '../i18n/utils';
+const locale = Astro.currentLocale === 'zh-CN' ? 'zh-CN' : 'en';
+---
+<BaseLayout title={t(locale, 'submit.title')} description={t(locale, 'submit.desc')} locale={locale}>
+  <section class="page-intro container">
+    <span class="eyebrow">{t(locale, 'submit.eyebrow')}</span>
+    <h1>{t(locale, 'submit.heading')}</h1>
+    <p>{t(locale, 'submit.desc')}</p>
+  </section>
+  <RecommendationForm locale={locale} />
+</BaseLayout>

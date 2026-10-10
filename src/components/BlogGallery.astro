@@ -1,0 +1,49 @@
+---
+import BlogCard from './BlogCard.astro';
+import { siteConfig } from '../config/site';
+import { t, type TranslationKey } from '../i18n/utils'; import type { Locale } from '../i18n/config';
+interface Props { blogs: any[]; interactive?: boolean; selectedCategory?: string; title?: string; locale?: Locale }
+const { blogs, interactive = false, selectedCategory, title, locale = Astro.currentLocale === 'zh-CN' ? 'zh-CN' : 'en' } = Astro.props;
+const payload = blogs.map(({ id, data }) => ({ id, name: data.name, url: data.url, categories: data.categories.map((c: string) => t(locale,`category.${c}` as TranslationKey)), categorySlugs: data.categories, tags: data.tags.map((tag: string) => t(locale,`tag.${tag}` as TranslationKey)), screenshot: data.screenshot, featured: data.featured }));
+const initial = selectedCategory ? blogs.filter((b) => b.data.categories.includes(selectedCategory)) : blogs;
+---
+<section class="gallery container" id="explore"><div class="gallery-head"><div><h2 class="gallery-heading">{title || t(locale,'gallery.title')}</h2><span class="gallery-count"><span data-count>{initial.length}</span> {t(locale,'gallery.count')}</span></div></div>
+{interactive && <div class="filters" aria-label={t(locale,'gallery.filters')}><button class="filter-chip active" data-category="all">{t(locale,'gallery.all')}</button>{siteConfig.categories.map((cat)=><button class="filter-chip" data-category={cat.slug}>{t(locale,`category.${cat.slug}` as TranslationKey)}</button>)}</div>}
+<div class="blog-grid" data-grid data-interactive={interactive} data-selected={selectedCategory || 'all'} data-no-results={t(locale,'gallery.noResults')} data-try-another={t(locale,'gallery.tryAnother')}>{initial.length ? initial.map((blog,index)=><div class="grid-item" data-blog-id={blog.id}><BlogCard blog={blog} eager={index<3} locale={locale}/></div>) : <div class="empty-state"><strong>{t(locale,'gallery.emptyTitle')}</strong>{t(locale,'gallery.empty')}</div>}</div>
+{interactive && <div class="load-more"><button class="button" data-load-more>{t(locale,'gallery.loadMore')} <span aria-hidden="true">↓</span></button></div>}</section>
+{interactive && <script>
+  import Fuse from 'fuse.js';
+  const grid = document.querySelector<HTMLElement>('[data-grid]');
+  const items = Array.from(document.querySelectorAll<HTMLElement>('.grid-item'));
+  type SearchBlog = { id: string; name: string; url: string; categories: string[]; categorySlugs: string[]; tags: string[]; screenshot: string; featured: boolean };
+  const raw = JSON.parse(document.querySelector('[data-blog-data]')?.textContent || '[]') as SearchBlog[];
+  const search = document.querySelector<HTMLInputElement>('[data-search]');
+  const clear = document.querySelector<HTMLButtonElement>('[data-clear]');
+  const chips = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-category]'));
+  const loadMore = document.querySelector<HTMLButtonElement>('[data-load-more]');
+  const count = document.querySelector<HTMLElement>('[data-count]');
+  const params = new URLSearchParams(location.search);
+  if (search) search.value = params.get('q') || '';
+  let category = params.get('category') || grid?.dataset.selected || 'all'; let limit = 9; let matches: SearchBlog[] = raw;
+  const fuse = new Fuse(raw, { keys: ['name','categories','tags','url'], threshold: .3, ignoreLocation: true, minMatchCharLength: 1 });
+  function render(){
+    if (!raw.length) return;
+    const query = search?.value.trim() || '';
+    matches = query ? fuse.search(query).map(r=>r.item) : raw;
+    const visible = matches.filter((b: SearchBlog)=>category==='all'||b.categorySlugs.includes(category));
+    items.forEach(item=>{const found=visible.find((b: SearchBlog)=>b.id===item.dataset.blogId);item.hidden=!found;item.style.display=found && visible.indexOf(found)<limit?'':'none'});
+    const empty = grid?.querySelector('.search-empty');
+    if (!visible.length && grid){if(!empty){const node=document.createElement('div');node.className='empty-state search-empty';const strong=document.createElement('strong');strong.textContent=grid.dataset.noResults||'';node.append(strong,document.createTextNode(grid.dataset.tryAnother||''));grid.append(node)}}else empty?.remove();
+    if(count)count.textContent=String(visible.length);
+    if(loadMore)loadMore.parentElement!.hidden=visible.length<=limit;
+    if(clear)clear.hidden=!query;
+  }
+  function syncQuery(){const params=new URLSearchParams(location.search);if(search?.value.trim())params.set('q',search.value.trim());else params.delete('q');if(category!=='all')params.set('category',category);else params.delete('category');history.replaceState(null,'',`${location.pathname}${params.size?'?'+params.toString():''}${location.hash}`)}
+  search?.addEventListener('input',()=>{limit=9;render();syncQuery()});
+  clear?.addEventListener('click',()=>{if(search){search.value='';search.focus();limit=9;render()}});
+  chips.forEach(chip=>chip.addEventListener('click',()=>{category=chip.dataset.category||'all';chips.forEach(c=>c.classList.toggle('active',c===chip));limit=9;render();syncQuery()}));
+  loadMore?.addEventListener('click',()=>{limit+=9;render()});
+  document.addEventListener('keydown',event=>{if((event.metaKey||event.ctrlKey)&&event.key.toLowerCase()==='k'){event.preventDefault();search?.focus()}});
+  chips.forEach(c=>c.classList.toggle('active',c.dataset.category===category));render();
+</script>}
+{interactive && <script type="application/json" data-blog-data set:html={JSON.stringify(payload)} />}

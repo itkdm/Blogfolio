@@ -1,0 +1,7 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { siteConfig } from '../../config/site';
+import { t, localizedPath } from '../../i18n/utils';
+const locale=Astro.currentLocale==='zh-CN'?'zh-CN':'en';
+---
+<BaseLayout title={t(locale,'about.pageTitle')} description={t(locale,'about.intro')} locale={locale}><section class="page-intro container"><span class="eyebrow">{t(locale,'about.kicker')}</span><h1>{t(locale,'about.title')}</h1><p>{t(locale,'about.intro')}</p></section><article class="content-copy container"><h2>{t(locale,'about.why')}</h2><p>{t(locale,'about.whyText')}</p><h2>{t(locale,'about.find')}</h2><p>{t(locale,'about.findText')}</p><h2>{t(locale,'about.choose')}</h2><p>{t(locale,'about.chooseText')}</p><h2>{t(locale,'about.recommend')}</h2><p>{t(locale,'about.recommendText')} <a href={localizedPath('/submit',locale)} style="color:#304c39;text-decoration:underline">{t(locale,'nav.submit')}</a>. <a href={`mailto:${siteConfig.email}`} style="color:#304c39;text-decoration:underline">{siteConfig.email}</a>.</p></article></BaseLayout>

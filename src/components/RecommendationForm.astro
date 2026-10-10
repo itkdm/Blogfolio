@@ -1,0 +1,34 @@
+---
+import { siteConfig } from '../config/site';
+import { t } from '../i18n/utils';
+import type { Locale } from '../i18n/config';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const embedUrl = new URL(siteConfig.recommendationFormUrl);
+embedUrl.searchParams.set('embedded', 'true');
+---
+
+<section class="google-form-wrap container" aria-label={t(locale, 'submit.iframeTitle')}>
+  <iframe
+    class="google-form-embed"
+    src={embedUrl.toString()}
+    title={t(locale, 'submit.iframeTitle')}
+    loading="lazy"
+    referrerpolicy="strict-origin-when-cross-origin"
+  ></iframe>
+  <p class="google-form-fallback">
+    {t(locale, 'submit.embedFallback')}
+    <a href={siteConfig.recommendationFormUrl} target="_blank" rel="noopener noreferrer">
+      {t(locale, 'submit.openForm')} ↗
+    </a>
+  </p>
+</section>
+
+<style>
+  .google-form-wrap { max-width: 800px; padding-bottom: 72px; }
+  .google-form-embed { display: block; width: 100%; height: 1200px; border: 1px solid var(--line); border-radius: 5px; background: #fff; }
+  .google-form-fallback { margin: 12px 0 0; color: var(--muted); font-size: 12px; }
+  .google-form-fallback a { color: var(--green); text-decoration: underline; text-underline-offset: 2px; }
+  @media (max-width: 640px) { .google-form-embed { height: 1450px; } }
+</style>

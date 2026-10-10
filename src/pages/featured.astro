@@ -1,0 +1,6 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'; import BlogGallery from '../components/BlogGallery.astro'; import { getCollection } from 'astro:content'; import { t } from '../i18n/utils';
+const locale=Astro.currentLocale==='zh-CN'?'zh-CN':'en';
+const blogs=(await getCollection('blogs')).filter(b=>b.data.featured);
+---
+<BaseLayout title={t(locale,'featured.title')} description={t(locale,'featured.desc')} locale={locale}><section class="page-intro container"><span class="eyebrow">{t(locale,'featured.eyebrow')}</span><h1>{t(locale,'featured.title')}</h1><p>{t(locale,'featured.desc')}</p></section><BlogGallery blogs={blogs} title={t(locale,'featured.collection')} locale={locale}/></BaseLayout>

@@ -1,0 +1,12 @@
+---
+import { t, type TranslationKey } from '../i18n/utils'; import type { Locale } from '../i18n/config';
+interface Props { blog: { id: string; data: { name: string; url: string; screenshot: string; categories: string[]; tags: string[]; featured: boolean } }; eager?: boolean; locale?: Locale }
+const { blog, eager = false, locale = Astro.currentLocale === 'zh-CN' ? 'zh-CN' : 'en' } = Astro.props;
+const domain = new URL(blog.data.url).hostname.replace(/^www\./, '');
+const name = blog.data.name;
+const externalLabel = `${t(locale,'card.visit')} ${name} (${t(locale,'card.newTab')})`;
+---
+<article class="blog-card"><a class="card-image" href={blog.data.url} target="_blank" rel="noopener noreferrer" aria-label={externalLabel}>
+  <img src={blog.data.screenshot} alt={`${t(locale,'card.imageAlt')} ${name}`} loading={eager ? 'eager' : 'lazy'} width="1440" height="900" onerror="this.hidden=true;this.nextElementSibling.hidden=false"/>
+  <div class="shot-placeholder" hidden aria-label={t(locale,'card.preview')}><div class="browser"><div class="browser-bar"><i></i><i></i><i></i></div><div class="browser-content"><b></b><span></span><span></span><em></em></div></div><span class="shot-label">{t(locale,'card.preview')}</span></div>
+</a><div class="card-meta"><div class="card-title-row"><a href={blog.data.url} target="_blank" rel="noopener noreferrer" class="card-title" aria-label={externalLabel}>{name}</a>{blog.data.featured && <span class="featured-mark" title={t(locale,'card.featured')}>✳</span>}</div><div class="card-domain">{domain}</div><div class="card-tags">{blog.data.categories.slice(0,2).map((category)=><span class="tag">{t(locale,`category.${category}` as TranslationKey)}</span>)}</div></div></article>

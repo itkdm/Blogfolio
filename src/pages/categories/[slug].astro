@@ -1,0 +1,6 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'; import BlogGallery from '../../components/BlogGallery.astro'; import { getCollection } from 'astro:content'; import { siteConfig } from '../../config/site'; import { t, type TranslationKey } from '../../i18n/utils';
+export async function getStaticPaths(){return siteConfig.categories.map(category=>({params:{slug:category.slug},props:{category}}))}
+const {category}=Astro.props;const locale=Astro.currentLocale==='zh-CN'?'zh-CN':'en';const description=t(locale,`category-desc.${category.slug}` as TranslationKey);const all=await getCollection('blogs');const blogs=all.filter(b=>b.data.categories.includes(category.slug));
+---
+<BaseLayout title={`${t(locale,`category.${category.slug}` as TranslationKey)} ${t(locale,'category.collection')}`} description={description} locale={locale}><section class="page-intro container"><span class="eyebrow">{t(locale,'category.eyebrow')}</span><h1>{t(locale,`category.${category.slug}` as TranslationKey)}</h1><p>{description} <span style="white-space:nowrap">{blogs.length} {t(locale,'category.count')}.</span></p></section><BlogGallery blogs={blogs} title={`${t(locale,`category.${category.slug}` as TranslationKey)} ${t(locale,'category.collection')}`} locale={locale}/></BaseLayout>

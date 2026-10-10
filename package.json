@@ -1,0 +1,33 @@
+{
+  "name": "blogfolio",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "screenshots": "tsx scripts/screenshots.ts",
+    "screenshots:install": "playwright install chromium",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.4",
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^7.3.8",
+    "fuse.js": "^7.1.0",
+    "lucide-astro": "^0.556.0",
+    "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@types/node": "^24.10.0",
+    "playwright": "^1.64.0",
+    "sharp": "^0.35.5",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}
