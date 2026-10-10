@@ -6,7 +6,7 @@ import { t, localizedPath } from '../i18n/utils';
 import type { Locale } from '../i18n/config';
 
 interface Props { title?: string; description?: string; canonical?: string; image?: string; locale?: Locale; noIndex?: boolean }
-const { title = siteConfig.name, description = siteConfig.description, canonical, image = '/og.svg', locale = Astro.currentLocale === 'zh-CN' ? 'zh-CN' : 'en', noIndex = false } = Astro.props;
+const { title = siteConfig.name, description = siteConfig.description, canonical, image = '/og-cover.jpg', locale = Astro.currentLocale === 'zh-CN' ? 'zh-CN' : 'en', noIndex = false } = Astro.props;
 const fullTitle = title === siteConfig.name ? title : `${title} — ${siteConfig.name}`;
 const canonicalUrl = new URL(canonical || Astro.url.pathname, siteConfig.url).toString();
 const englishPath = localizedPath(Astro.url.pathname, 'en');
@@ -32,6 +32,10 @@ const imageUrl = new URL(image, siteConfig.url).toString();
     <meta property="og:description" content={description} />
     {!noIndex && <meta property="og:url" content={canonicalUrl} />}
     <meta property="og:image" content={imageUrl} />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Blogfolio — A field guide to the personal web" />
     <meta name="twitter:card" content="summary_large_image" />
     <title>{fullTitle}</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
