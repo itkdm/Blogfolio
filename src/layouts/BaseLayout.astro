@@ -5,8 +5,8 @@ import { Menu } from 'lucide-astro';
 import { t, localizedPath } from '../i18n/utils';
 import type { Locale } from '../i18n/config';
 
-interface Props { title?: string; description?: string; canonical?: string; image?: string; locale?: Locale }
-const { title = siteConfig.name, description = siteConfig.description, canonical, image = '/og.svg', locale = Astro.currentLocale === 'zh-CN' ? 'zh-CN' : 'en' } = Astro.props;
+interface Props { title?: string; description?: string; canonical?: string; image?: string; locale?: Locale; noIndex?: boolean }
+const { title = siteConfig.name, description = siteConfig.description, canonical, image = '/og.svg', locale = Astro.currentLocale === 'zh-CN' ? 'zh-CN' : 'en', noIndex = false } = Astro.props;
 const fullTitle = title === siteConfig.name ? title : `${title} — ${siteConfig.name}`;
 const canonicalUrl = new URL(canonical || Astro.url.pathname, siteConfig.url).toString();
 const englishPath = localizedPath(Astro.url.pathname, 'en');
@@ -20,15 +20,17 @@ const imageUrl = new URL(image, siteConfig.url).toString();
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonicalUrl} />
-    <link rel="alternate" hreflang="en" href={new URL(englishPath, siteConfig.url)} />
-    <link rel="alternate" hreflang="zh-CN" href={new URL(chinesePath, siteConfig.url)} />
-    <link rel="alternate" hreflang="x-default" href={new URL(englishPath, siteConfig.url)} />
+    {noIndex ? <meta name="robots" content="noindex, follow" /> : <>
+      <link rel="canonical" href={canonicalUrl} />
+      <link rel="alternate" hreflang="en" href={new URL(englishPath, siteConfig.url)} />
+      <link rel="alternate" hreflang="zh-CN" href={new URL(chinesePath, siteConfig.url)} />
+      <link rel="alternate" hreflang="x-default" href={new URL(englishPath, siteConfig.url)} />
+    </>}
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={siteConfig.name} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
-    <meta property="og:url" content={canonicalUrl} />
+    {!noIndex && <meta property="og:url" content={canonicalUrl} />}
     <meta property="og:image" content={imageUrl} />
     <meta name="twitter:card" content="summary_large_image" />
     <title>{fullTitle}</title>
