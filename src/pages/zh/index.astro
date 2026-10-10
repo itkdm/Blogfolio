@@ -7,7 +7,7 @@ const locale = Astro.currentLocale === 'zh-CN' ? 'zh-CN' : 'en';
 const blogs = (await getCollection('blogs')).sort((a,b)=>Number(b.data.featured)-Number(a.data.featured));
 const subtitle=t(locale,'home.subtitle');
 ---
-<BaseLayout title={`${t(locale,'home.title')} ${t(locale,'home.titleEm')}`} description={subtitle} locale={locale}>
+<BaseLayout title={t(locale,'home.metaTitle')} description={t(locale,'home.metaDescription')} locale={locale}>
   <section class="hero container"><span class="hero-kicker">{t(locale,'home.kicker')}</span><h1>{t(locale,'home.title')}<br/><em class="serif" style="color:#526c57">{t(locale,'home.titleEm')}</em></h1><p>{subtitle}</p><div class="search-wrap"><label class="search-box"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#788078" stroke-width="1.7"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4"/></svg><input data-search type="search" placeholder={t(locale,'home.search')} aria-label={t(locale,'home.searchLabel')}/><kbd class="search-hint">⌘ K</kbd><button data-clear aria-label={t(locale,'home.clearSearch')} hidden>×</button></label></div></section>
   <BlogGallery blogs={blogs} interactive locale={locale}/>
 </BaseLayout>
